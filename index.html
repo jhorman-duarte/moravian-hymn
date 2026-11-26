@@ -1,483 +1,429 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus ERP | Suite Integral de Contabilidad y Auditoría</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        darkbg: '#0f172a',
-                        cardbg: '#1e293b',
-                        accent: '#38bdf8',
-                        accenthover: '#0ea5e9'
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-darkbg text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iglesia Morava — Himnario, Biblia y Juegos</title>
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --card: #ffffff;
+      --navy: #1b365d;
+      --crimson: #8b1e2f;
+      --gold: #c59b27;
+      --green: #2e6f40;
+      --text: #1e242b;
+      --muted: #5c6670;
+      --border: #dcd6c8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 14px; }
+    .container { max-width: 960px; margin: 0 auto; }
 
-    <!-- HEADER / SUPERIOR -->
-    <header class="bg-cardbg border-b border-slate-800 px-6 py-4 flex justify-between items-center shadow-lg">
-        <div class="flex items-center space-x-3">
-            <div class="bg-accent/10 p-2 rounded-lg border border-accent/30 text-accent">
-                <i class="fa-solid fa-chart-line text-xl"></i>
-            </div>
-            <div>
-                <h1 class="text-lg font-bold tracking-wider text-white">NEXUS <span class="text-accent">CONTABLE</span></h1>
-                <p class="text-xs text-slate-400">Suite Integral de Auditoría y Gestión Financiera</p>
-            </div>
-        </div>
-        <div class="flex items-center space-x-4">
-            <span class="text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-full text-slate-300">
-                <i class="fa-solid fa-circle text-emerald-400 text-[8px] mr-1.5"></i> Sistema Activo (Local)
-            </span>
-            <button onclick="resetData()" class="text-xs bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg transition">
-                <i class="fa-solid fa-trash-can mr-1"></i> Reiniciar Datos
-            </button>
-        </div>
+    /* Encabezado Moravo */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #122540 100%);
+      color: #fff;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 4px solid var(--gold);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .seal-badge {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: #fff;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+      border: 3px solid var(--gold);
+      overflow: hidden;
+    }
+    header h1 { font-size: 1.4rem; letter-spacing: 0.3px; }
+    header p { font-size: 0.9rem; opacity: 0.9; margin-top: 3px; font-style: italic; }
+
+    /* Navegación principal */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .btn-nav {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-bottom: 5px solid var(--navy);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .btn-nav:hover, .btn-nav:focus { transform: translateY(-2px); outline: 2px solid var(--gold); }
+    .btn-nav.active-tab { background: #fdfbf7; border-color: var(--gold); }
+    .btn-nav.red { border-bottom-color: var(--crimson); }
+    .btn-nav.green { border-bottom-color: var(--green); }
+    .btn-nav strong { display: block; font-size: 1.08rem; color: var(--navy); margin-bottom: 4px; }
+    .btn-nav.red strong { color: var(--crimson); }
+    .btn-nav.green strong { color: var(--green); }
+    .btn-nav span { font-size: 0.84rem; color: var(--muted); display: block; }
+
+    /* Paneles de contenido */
+    .panel {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+    .panel.active { display: block; }
+    .panel h2 { color: var(--navy); margin-bottom: 6px; font-size: 1.25rem; }
+    .info-note { font-size: 0.88rem; color: var(--muted); margin-bottom: 14px; line-height: 1.45; }
+
+    /* Sub-pestañas */
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border);
+      background: #f0ede6; cursor: pointer; font-weight: 600; color: var(--text);
+      font-size: 0.95rem;
+    }
+    .tab-btn.active { background: var(--crimson); color: #fff; border-color: var(--crimson); }
+
+    /* Controles y formularios */
+    .search-row { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    input, select, button.action {
+      padding: 12px 14px; border-radius: 10px; border: 1px solid #c5bfb2; font-size: 1rem;
+    }
+    input[type="number"], input[type="text"], select { flex: 1; min-width: 160px; background: #fff; }
+    button.action {
+      background: var(--navy); color: #fff; border: none; font-weight: 600; cursor: pointer;
+      transition: background 0.15s;
+    }
+    button.action.red { background: var(--crimson); }
+    button.action:hover { opacity: 0.92; }
+
+    /* Visor PDF */
+    .pdf-box {
+      width: 100%; height: 560px; border: 1px solid var(--border);
+      border-radius: 12px; background: #eee; margin-top: 8px;
+    }
+    .status-bar {
+      background: #f7f5f0; padding: 10px 14px; border-radius: 8px;
+      border-left: 4px solid var(--crimson); font-size: 0.9rem; margin-bottom: 10px;
+    }
+
+    /* Resultados Biblia y Juegos */
+    .bible-result, .game-box {
+      background: #faf8f5; border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px; margin-top: 12px; line-height: 1.65; font-size: 1.05rem;
+    }
+    .option-btn {
+      display: block; width: 100%; text-align: left; margin-top: 10px;
+      padding: 12px 15px; border-radius: 10px; border: 1px solid var(--border);
+      background: #fff; cursor: pointer; font-size: 0.98rem; transition: background 0.15s;
+    }
+    .option-btn:hover { background: #eef3f8; border-color: var(--navy); }
+    .score-pill {
+      display: inline-block; background: var(--navy); color: #fff;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; margin-bottom: 12px;
+    }
+
+    /* Tarjetas futuros libros */
+    .future-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px; margin-top: 12px;
+    }
+    .future-card {
+      border: 1px dashed #b8b0a0; border-radius: 12px; padding: 16px; background: #faf9f6;
+    }
+    .future-card h3 { font-size: 1.05rem; margin-bottom: 6px; }
+    .badge-soon {
+      display: inline-block; background: #e8e2d5; color: #5c5346;
+      font-size: 0.75rem; padding: 3px 8px; border-radius: 6px; font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="seal-badge" title="Sello Moravo: Nuestro Cordero ha vencido, sigámosle">
+        <!-- SVG Sello Moravo estilizado -->
+        <svg viewBox="0 0 100 100" width="56" height="56">
+          <circle cx="50" cy="50" r="46" fill="#1b365d" stroke="#c59b27" stroke-width="4"/>
+          <line x1="52" y1="20" x2="52" y2="75" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+          <line x1="42" y1="30" x2="62" y2="30" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+          <polygon points="52,22 76,30 52,38" fill="#8b1e2f" stroke="#ffffff" stroke-width="1.5"/>
+          <ellipse cx="46" cy="64" rx="16" ry="11" fill="#ffffff"/>
+          <circle cx="33" cy="57" r="7" fill="#ffffff"/>
+          <line x1="36" y1="73" x2="36" y2="83" stroke="#ffffff" stroke-width="3"/>
+          <line x1="54" y1="73" x2="54" y2="83" stroke="#ffffff" stroke-width="3"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Iglesia Morava — Asistente de Culto</h1>
+        <p>"Vicit Agnus Noster, Eum Sequamur" — Nuestro Cordero ha vencido, sigámosle</p>
+      </div>
     </header>
 
-    <div class="flex flex-1 overflow-hidden">
-        <!-- BARRA LATERAL -->
-        <aside class="w-64 bg-cardbg border-r border-slate-800 flex flex-col justify-between hidden md:flex">
-            <nav class="p-4 space-y-1">
-                <p class="px-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Módulos Principales</p>
-                <a href="#dashboard" onclick="switchTab('dashboard')" id="nav-dashboard" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-accent text-darkbg transition">
-                    <i class="fa-solid fa-gauge w-5"></i>
-                    <span>Panel Principal</span>
-                </a>
-                <a href="#libro-diario" onclick="switchTab('libro-diario')" id="nav-libro-diario" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-book w-5"></i>
-                    <span>Libro Diario</span>
-                </a>
-                <a href="#cuentas-t" onclick="switchTab('cuentas-t')" id="nav-cuentas-t" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-t w-5"></i>
-                    <span>Cuentas T (Mayor)</span>
-                </a>
-                <a href="#balance" onclick="switchTab('balance')" id="nav-balance" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-scale-balanced w-5"></i>
-                    <span>Balance General</span>
-                </a>
-            </nav>
-            <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
-                Arquitectura Web ERP &bull; 2026
-            </div>
-        </aside>
+    <nav class="menu-grid" aria-label="Menú principal">
+      <button class="btn-nav red active-tab" onclick="showSection('hymnal', this)">
+        <strong>Himnario Rojo</strong>
+        <span>Buscar Himnos y Liturgias</span>
+      </button>
+      <button class="btn-nav" onclick="showSection('bible', this)">
+        <strong>La Biblia</strong>
+        <span>Lectura y consulta bíblica</span>
+      </button>
+      <button class="btn-nav green" onclick="showSection('games', this)">
+        <strong>Juegos Bíblicos</strong>
+        <span>Trivia para jóvenes y niños</span>
+      </button>
+      <button class="btn-nav" onclick="showSection('future', this)">
+        <strong>Más Recursos</strong>
+        <span>Azul, Verde y Texto Diario</span>
+      </button>
+    </nav>
 
-        <!-- CONTENIDO PRINCIPAL -->
-        <main class="flex-1 overflow-y-auto p-6 bg-[#0b1120]">
+    <!-- SECCIÓN 1: HIMNARIO ROJO -->
+    <section id="hymnal" class="panel active">
+      <h2>Himnario Rojo (1969)</h2>
+      <p class="info-note">
+        Escribe directamente el <strong>número del himno</strong> (no el número de página del libro) y la aplicación abrirá la página exacta en el PDF.
+      </p>
 
-            <!-- SECCIÓN: DASHBOARD -->
-            <section id="tab-dashboard" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="bg-cardbg border border-slate-800 p-5 rounded-xl shadow-sm">
-                        <p class="text-xs font-medium text-slate-400">Total Activos Registrados</p>
-                        <h3 id="dash-activos" class="text-2xl font-bold text-white mt-1">$0.00</h3>
-                    </div>
-                    <div class="bg-cardbg border border-slate-800 p-5 rounded-xl shadow-sm">
-                        <p class="text-xs font-medium text-slate-400">Total Pasivos</p>
-                        <h3 id="dash-pasivos" class="text-2xl font-bold text-amber-400 mt-1">$0.00</h3>
-                    </div>
-                    <div class="bg-cardbg border border-slate-800 p-5 rounded-xl shadow-sm">
-                        <p class="text-xs font-medium text-slate-400">Patrimonio Neto</p>
-                        <h3 id="dash-capital" class="text-2xl font-bold text-accent mt-1">$0.00</h3>
-                    </div>
-                    <div class="bg-cardbg border border-slate-800 p-5 rounded-xl shadow-sm">
-                        <p class="text-xs font-medium text-slate-400">Asientos Registrados</p>
-                        <h3 id="dash-asientos" class="text-2xl font-bold text-emerald-400 mt-1">0</h3>
-                    </div>
-                </div>
+      <div class="tabs">
+        <button id="tab-hymn" class="tab-btn active" onclick="setMode('hymn')">Buscar por N° de Himno</button>
+        <button id="tab-liturgy" class="tab-btn" onclick="setMode('liturgy')">Seleccionar Liturgia</button>
+      </div>
 
-                <div class="bg-cardbg border border-slate-800 p-6 rounded-xl shadow-sm">
-                    <h3 class="text-base font-semibold text-white mb-2"><i class="fa-solid fa-circle-info text-accent mr-2"></i> Bienvenida a Nexus Contable</h3>
-                    <p class="text-sm text-slate-400 leading-relaxed">
-                        Esta plataforma procesa contabilidad por partida doble en tiempo real. Utiliza el módulo de <strong>Libro Diario</strong> para ingresar transacciones (verificando que el Debe y el Haber cuadren de forma exacta), y visualiza de inmediato las <strong>Cuentas T</strong> y el <strong>Balance General</strong> sin recargar la página.
-                    </p>
-                </div>
-            </section>
+      <div id="mode-hymn" class="search-row">
+        <input id="hymnNumber" type="number" min="1" placeholder="Ej. 1, 150, 384..." onkeydown="if(event.key==='Enter') goToHymn()" />
+        <button class="action red" onclick="goToHymn()">Abrir Himno</button>
+      </div>
 
-            <!-- SECCIÓN: LIBRO DIARIO -->
-            <section id="tab-libro-diario" class="space-y-6 hidden">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h2 class="text-lg font-bold text-white">Registro en Libro Diario</h2>
-                        <p class="text-xs text-slate-400">Registra partidas dobles garantizando el balance financiero.</p>
-                    </div>
-                </div>
+      <div id="mode-liturgy" class="search-row" style="display:none;">
+        <select id="liturgySelect">
+          <option value="1">Liturgia 1 — Adoración / Culto General</option>
+          <option value="2">Liturgia 2 — Adviento y Navidad</option>
+          <option value="3">Liturgia 3 — Cuaresma y Semana Santa</option>
+          <option value="4">Liturgia 4 — Resurrección y Pentecostés</option>
+          <option value="5">Liturgia 5 — Santa Cena / Comunión</option>
+        </select>
+        <button class="action red" onclick="goToLiturgy()">Abrir Liturgia</button>
+      </div>
 
-                <!-- Formulario de Asiento -->
-                <div class="bg-cardbg border border-slate-800 p-6 rounded-xl shadow-sm space-y-4">
-                    <h3 class="text-sm font-semibold text-accent border-b border-slate-800 pb-2">Nueva Partida Contable</h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Fecha</label>
-                            <input type="date" id="entry-date" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Concepto / Descripción de la Transacción</label>
-                            <input type="text" id="entry-concept" placeholder="Ej: Aporte inicial de capital, compra de mercancía..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent">
-                        </div>
-                    </div>
+      <div id="hymnalStatus" class="status-bar">
+        Listo. Asegúrate de subir tu archivo PDF llamado <strong>himnario-rojo.pdf</strong> en esta misma carpeta de GitHub.
+      </div>
+      <iframe id="pdfViewer" class="pdf-box" src="himnario-rojo.pdf#page=1" title="Visor del Himnario Rojo"></iframe>
+    </section>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Cuenta Contable</label>
-                            <select id="entry-account" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent">
-                                <option value="Caja / Bancos">Caja / Bancos (Activo)</option>
-                                <option value="Inventario">Inventario de Mercancías (Activo)</option>
-                                <option value="Cuentas por Cobrar">Cuentas por Cobrar (Activo)</option>
-                                <option value="Equipos de Oficina">Equipos de Oficina (Activo)</option>
-                                <option value="Cuentas por Pagar">Cuentas por Pagar (Pasivo)</option>
-                                <option value="Préstamos Bancarios">Préstamos Bancarios (Pasivo)</option>
-                                <option value="Capital Social">Capital Social (Patrimonio)</option>
-                                <option value="Ingresos por Ventas">Ingresos por Ventas (Ingreso)</option>
-                                <option value="Gastos Operativos">Gastos Operativos (Gasto)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Movimiento</label>
-                            <select id="entry-type" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent">
-                                <option value="debe">DEBE (Cargo)</option>
-                                <option value="haber">HABER (Abono)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Monto ($)</label>
-                            <input type="number" step="0.01" id="entry-amount" placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-accent">
-                        </div>
-                    </div>
+    <!-- SECCIÓN 2: BIBLIA -->
+    <section id="bible" class="panel">
+      <h2>Santa Biblia (Consulta Rápida)</h2>
+      <p class="info-note">
+        Escribe el libro, capítulo y versículo (por ejemplo: <code>Juan 3:16</code>, <code>Salmos 23</code> o <code>Mateo 5:1-12</code>).
+      </p>
+      <div class="search-row">
+        <input id="passageInput" type="text" value="Salmos 23" placeholder="Ej. Juan 3:16 o Salmos 23" onkeydown="if(event.key==='Enter') searchBible()" />
+        <button class="action" onclick="searchBible()">Buscar Pasaje</button>
+      </div>
+      <div id="bibleOutput" class="bible-result">
+        Presiona <strong>Buscar Pasaje</strong> para leer la Palabra.
+      </div>
+    </section>
 
-                    <div class="flex justify-end pt-2">
-                        <button onclick="addEntry()" class="bg-accent hover:bg-accenthover text-darkbg font-semibold px-5 py-2 rounded-lg text-sm transition flex items-center space-x-2">
-                            <i class="fa-solid fa-plus"></i>
-                            <span>Registrar Movimiento</span>
-                        </button>
-                    </div>
-                </div>
+    <!-- SECCIÓN 3: JUEGOS -->
+    <section id="games" class="panel">
+      <h2>Trivia Bíblica y Morava</h2>
+      <p class="info-note">Pon a prueba tus conocimientos sobre la Biblia y la historia de nuestra iglesia.</p>
+      <div class="game-box">
+        <span id="scoreDisplay" class="score-pill">Aciertos: 0</span>
+        <h3 id="questionText">Cargando pregunta...</h3>
+        <div id="optionsContainer"></div>
+        <p id="gameFeedback" style="margin-top:12px; font-weight:600;"></p>
+        <button class="action" style="margin-top:14px;" onclick="nextQuestion()">Siguiente Pregunta</button>
+      </div>
+    </section>
 
-                <!-- Tabla de Asientos -->
-                <div class="bg-cardbg border border-slate-800 rounded-xl overflow-hidden shadow-sm">
-                    <div class="px-6 py-4 border-b border-slate-800">
-                        <h3 class="text-sm font-semibold text-white">Historial de Partidas Registradas</h3>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-sm">
-                            <thead>
-                                <tr class="bg-slate-900/50 text-slate-400 text-xs border-b border-slate-800">
-                                    <th class="px-6 py-3 font-semibold">Fecha</th>
-                                    <th class="px-6 py-3 font-semibold">Concepto</th>
-                                    <th class="px-6 py-3 font-semibold">Cuenta</th>
-                                    <th class="px-6 py-3 font-semibold text-right">Debe ($)</th>
-                                    <th class="px-6 py-3 font-semibold text-right">Haber ($)</th>
-                                    <th class="px-6 py-3 font-semibold text-center">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="entries-table-body" class="divide-y divide-slate-800 text-slate-300">
-                                <!-- Dinámico -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+    <!-- SECCIÓN 4: OTROS LIBROS -->
+    <section id="future" class="panel">
+      <h2>Biblioteca Morava — Próximas Etapas</h2>
+      <p class="info-note">Estos espacios ya están preparados en el sistema para integrarse en cuanto dispongamos de los archivos digitales:</p>
+      <div class="future-grid">
+        <div class="future-card">
+          <span class="badge-soon">En preparación</span>
+          <h3 style="color:#1b365d; margin-top:8px;">Himnario Azul</h3>
+          <p class="info-note"><em>Moravian Book of Worship</em> — Himnos y liturgias contemporáneas.</p>
+        </div>
+        <div class="future-card">
+          <span class="badge-soon">En preparación</span>
+          <h3 style="color:#2e6f40; margin-top:8px;">Librito Verde</h3>
+          <p class="info-note">Cantos y coros tradicionales de la congregación.</p>
+        </div>
+        <div class="future-card">
+          <span class="badge-soon">En preparación</span>
+          <h3 style="color:#8b1e2f; margin-top:8px;">Texto Diario</h3>
+          <p class="info-note">Lecturas devocionales diarias (<em>Losungen</em>).</p>
+        </div>
+      </div>
+    </section>
+  </div>
 
-            <!-- SECCIÓN: CUENTAS T -->
-            <section id="tab-cuentas-t" class="space-y-6 hidden">
-                <div>
-                    <h2 class="text-lg font-bold text-white">Esquemas de Mayor (Cuentas T)</h2>
-                    <p class="text-xs text-slate-400">Resumen consolidado de débitos y créditos por cada cuenta contable.</p>
-                </div>
-                <div id="t-accounts-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Dinámico -->
-                </div>
-            </section>
+  <script>
+    // =========================================================================
+    // TABLA DE MAPEO DE HIMNOS: { [NumeroDeHimno]: PaginaRealEnElPDF }
+    // Ejemplo: Si el Himno 1 empieza en la página 115 del PDF, pon 1: 115.
+    // =========================================================================
+    const hymnPageMap = {
+      1: 115,
+      2: 116,
+      384: 452
+    };
 
-            <!-- SECCIÓN: BALANCE GENERAL -->
-            <section id="tab-balance" class="space-y-6 hidden">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h2 class="text-lg font-bold text-white">Balance General Automatizado</h2>
-                        <p class="text-xs text-slate-400">Comprobación de la Ecuación Contable: Activo = Pasivo + Capital.</p>
-                    </div>
-                    <button onclick="window.print()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-4 py-2 rounded-lg transition flex items-center space-x-2">
-                        <i class="fa-solid fa-print"></i>
-                        <span>Imprimir / PDF</span>
-                    </button>
-                </div>
+    // Tabla de mapeo para liturgias: { [ID_Liturgia]: PaginaRealEnElPDF }
+    const liturgyPageMap = {
+      1: 15,
+      2: 32,
+      3: 48,
+      4: 64,
+      5: 80
+    };
 
-                <div class="bg-cardbg border border-slate-800 p-6 rounded-xl shadow-sm space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
-                            <h4 class="text-xs font-bold text-accent uppercase tracking-wider mb-3">Activos</h4>
-                            <div id="balance-activos" class="space-y-2 text-sm text-slate-300"></div>
-                            <div class="border-t border-slate-800 mt-4 pt-2 flex justify-between font-bold text-white">
-                                <span>Total Activos:</span>
-                                <span id="total-activos">$0.00</span>
-                            </div>
-                        </div>
+    const PDF_FILE = "himnario-rojo.pdf";
 
-                        <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
-                            <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-3">Pasivos</h4>
-                            <div id="balance-pasivos" class="space-y-2 text-sm text-slate-300"></div>
-                            <div class="border-t border-slate-800 mt-4 pt-2 flex justify-between font-bold text-white">
-                                <span>Total Pasivos:</span>
-                                <span id="total-pasivos">$0.00</span>
-                            </div>
-                        </div>
+    function showSection(id, btnElement) {
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      document.querySelectorAll(".btn-nav").forEach(b => b.classList.remove("active-tab"));
+      if (btnElement) btnElement.classList.add("active-tab");
+    }
 
-                        <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
-                            <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3">Patrimonio & Capital</h4>
-                            <div id="balance-capital" class="space-y-2 text-sm text-slate-300"></div>
-                            <div class="border-t border-slate-800 mt-4 pt-2 flex justify-between font-bold text-white">
-                                <span>Total Capital:</span>
-                                <span id="total-capital">$0.00</span>
-                            </div>
-                        </div>
-                    </div>
+    function setMode(mode) {
+      document.getElementById("tab-hymn").classList.toggle("active", mode === "hymn");
+      document.getElementById("tab-liturgy").classList.toggle("active", mode === "liturgy");
+      document.getElementById("mode-hymn").style.display = mode === "hymn" ? "flex" : "none";
+      document.getElementById("mode-liturgy").style.display = mode === "liturgy" ? "flex" : "none";
+    }
 
-                    <div id="balance-status" class="p-4 rounded-lg text-center text-sm font-medium">
-                        <!-- Estado de comprobación -->
-                    </div>
-                </div>
-            </section>
+    function goToHymn() {
+      const num = parseInt(document.getElementById("hymnNumber").value, 10);
+      const status = document.getElementById("hymnalStatus");
+      if (!num || num < 1) {
+        status.textContent = "Por favor, escribe un número de himno válido (ejemplo: 384).";
+        return;
+      }
+      const targetPage = hymnPageMap[num];
+      if (targetPage) {
+        document.getElementById("pdfViewer").src = `${PDF_FILE}#page=${targetPage}`;
+        status.innerHTML = `<strong>Himno #${num}</strong> localizado → Abriendo página <strong>${targetPage}</strong> del PDF.`;
+      } else {
+        // Si aún no está mapeado, calcula un desplazamiento aproximado (+114 páginas de liturgias iniciales)
+        const estimatedPage = num + 114;
+        document.getElementById("pdfViewer").src = `${PDF_FILE}#page=${estimatedPage}`;
+        status.innerHTML = `El <strong>Himno #${num}</strong> aún no está calibrado en el índice; abriendo página aproximada <strong>${estimatedPage}</strong>.`;
+      }
+    }
 
-        </main>
-    </div>
+    function goToLiturgy() {
+      const key = document.getElementById("liturgySelect").value;
+      const page = liturgyPageMap[key] || 1;
+      document.getElementById("pdfViewer").src = `${PDF_FILE}#page=${page}`;
+      document.getElementById("hymnalStatus").innerHTML = `<strong>Liturgia seleccionada</strong> → Abriendo página <strong>${page}</strong> del PDF.`;
+    }
 
-    <!-- SCRIPT DE LÓGICA CONTABLE -->
-    <script>
-        // Estado inicial de asientos
-        let entries = JSON.parse(localStorage.getItem('nexus_entries')) || [];
-
-        // Establecer fecha actual por defecto
-        document.getElementById('entry-date').valueAsDate = new Date();
-
-        function switchTab(tabId) {
-            ['dashboard', 'libro-diario', 'cuentas-t', 'balance'].forEach(id => {
-                document.getElementById(`tab-${id}`).classList.add('hidden');
-                document.getElementById(`nav-${id}`).className = "flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition";
-            });
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            document.getElementById(`nav-${tabId}`).className = "flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-accent text-darkbg transition";
-            
-            if(tabId === 'cuentas-t') renderTAccounts();
-            if(tabId === 'balance') renderBalance();
-            if(tabId === 'dashboard') updateDashboard();
+    async function searchBible() {
+      const raw = document.getElementById("passageInput").value.trim();
+      const out = document.getElementById("bibleOutput");
+      if (!raw) {
+        out.textContent = "Escribe un pasaje bíblico para buscar.";
+        return;
+      }
+      out.textContent = "Buscando en las Escrituras...";
+      try {
+        // Usamos traducción en español (Reina Valera 1909 / open bible)
+        const res = await fetch(`https://bible-api.com/${encodeURIComponent(raw)}?translation=rvr1960`);
+        if (!res.ok) {
+          // Respaldo si la traducción específica no responde
+          const fallback = await fetch(`https://bible-api.com/${encodeURIComponent(raw)}`);
+          if (!fallback.ok) throw new Error("No encontrado");
+          const dataFallback = await fallback.json();
+          out.innerHTML = `<strong style="color:#1b365d; font-size:1.15rem;">${dataFallback.reference}</strong><br><br>${dataFallback.text}`;
+          return;
         }
+        const data = await res.json();
+        out.innerHTML = `<strong style="color:#1b365d; font-size:1.15rem;">${data.reference}</strong><br><br>${data.text}`;
+      } catch (err) {
+        out.textContent = "No se pudo cargar el pasaje. Verifica que el nombre del libro y el capítulo estén bien escritos (ej. Juan 3:16).";
+      }
+    }
 
-        function addEntry() {
-            const date = document.getElementById('entry-date').value;
-            const concept = document.getElementById('entry-concept').value.trim();
-            const account = document.getElementById('entry-account').value;
-            const type = document.getElementById('entry-type').value;
-            const amount = parseFloat(document.getElementById('entry-amount').value);
+    const questions = [
+      {
+        q: "¿Qué significa el lema del escudo de la Iglesia Morava: 'Vicit Agnus Noster, Eum Sequamur'?",
+        options: ["Nuestro Cordero ha vencido, sigámosle", "La luz brilla en las tinieblas", "Paz y gracia en el Señor"],
+        answer: 0
+      },
+      {
+        q: "¿En qué año comenzó la renovación espiritual de la Iglesia Morava en Herrnhut?",
+        options: ["1727", "1457", "1849"],
+        answer: 0
+      },
+      {
+        q: "¿Quién escribió la mayoría de los Salmos en la Biblia?",
+        options: ["El rey David", "El profeta Isaías", "El apóstol Pablo"],
+        answer: 0
+      },
+      {
+        q: "¿Cuál es el primer libro del Nuevo Testamento?",
+        options: ["Mateo", "Génesis", "Hechos"],
+        answer: 0
+      }
+    ];
+    let qIndex = 0;
+    let score = 0;
+    let answered = false;
 
-            if(!concept || isNaN(amount) || amount <= 0) {
-                alert('Por favor complete todos los campos correctamente con un monto válido.');
-                return;
+    function renderQuestion() {
+      const item = questions[qIndex];
+      answered = false;
+      document.getElementById("questionText").textContent = item.q;
+      document.getElementById("gameFeedback").textContent = "";
+      const box = document.getElementById("optionsContainer");
+      box.innerHTML = "";
+      item.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.textContent = opt;
+        btn.onclick = () => {
+          const fb = document.getElementById("gameFeedback");
+          if (idx === item.answer) {
+            if (!answered) {
+              score++;
+              document.getElementById("scoreDisplay").textContent = `Aciertos: ${score}`;
             }
+            fb.textContent = "¡Correcto! Muy bien.";
+            fb.style.color = "#2e6f40";
+          } else {
+            fb.textContent = "Respuesta incorrecta, intenta con otra opción.";
+            fb.style.color = "#8b1e2f";
+          }
+          answered = true;
+        };
+        box.appendChild(btn);
+      });
+    }
 
-            const newEntry = {
-                id: Date.now(),
-                date,
-                concept,
-                account,
-                type, // 'debe' o 'haber'
-                amount
-            };
+    function nextQuestion() {
+      qIndex = (qIndex + 1) % questions.length;
+      renderQuestion();
+    }
 
-            entries.push(newEntry);
-            saveAndRefresh();
-
-            // Limpiar campos numéricos y concepto
-            document.getElementById('entry-concept').value = '';
-            document.getElementById('entry-amount').value = '';
-        }
-
-        function deleteEntry(id) {
-            entries = entries.filter(e => e.id !== id);
-            saveAndRefresh();
-        }
-
-        function saveAndRefresh() {
-            localStorage.setItem('nexus_entries', JSON.stringify(entries));
-            renderEntries();
-            updateDashboard();
-        }
-
-        function renderEntries() {
-            const tbody = document.getElementById('entries-table-body');
-            tbody.innerHTML = '';
-
-            if(entries.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-500">No hay movimientos registrados en el libro diario.</td></tr>`;
-                return;
-            }
-
-            entries.forEach(e => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition";
-                tr.innerHTML = `
-                    <td class="px-6 py-3 font-mono text-xs text-slate-400">${e.date}</td>
-                    <td class="px-6 py-3 font-medium text-white">${e.concept}</td>
-                    <td class="px-6 py-3 text-slate-300">${e.account}</td>
-                    <td class="px-6 py-3 text-right font-mono ${e.type === 'debe' ? 'text-accent' : 'text-slate-500'}">${e.type === 'debe' ? '$' + e.amount.toFixed(2) : '-'}</td>
-                    <td class="px-6 py-3 text-right font-mono ${e.type === 'haber' ? 'text-amber-400' : 'text-slate-500'}">${e.type === 'haber' ? '$' + e.amount.toFixed(2) : '-'}</td>
-                    <td class="px-6 py-3 text-center">
-                        <button onclick="deleteEntry(${e.id})" class="text-slate-500 hover:text-rose-400 transition"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function getAccountBalances() {
-            const balances = {};
-            entries.forEach(e => {
-                if(!balances[e.account]) balances[e.account] = { debe: 0, haber: 0 };
-                if(e.type === 'debe') balances[e.account].debe += e.amount;
-                if(e.type === 'haber') balances[e.account].haber += e.amount;
-            });
-            return balances;
-        }
-
-        function renderTAccounts() {
-            const container = document.getElementById('t-accounts-container');
-            container.innerHTML = '';
-            const balances = getAccountBalances();
-
-            const accounts = Object.keys(balances);
-            if(accounts.length === 0) {
-                container.innerHTML = `<div class="col-span-2 text-center py-10 text-slate-500">No hay cuentas con movimientos para mostrar en esquema T.</div>`;
-                return;
-            }
-
-            accounts.forEach(acc => {
-                const b = balances[acc];
-                const net = b.debe - b.haber;
-                const div = document.createElement('div');
-                div.className = "bg-cardbg border border-slate-800 p-4 rounded-xl shadow-sm";
-                div.innerHTML = `
-                    <h4 class="text-sm font-bold text-white text-center pb-2 border-b border-slate-800 mb-3">${acc}</h4>
-                    <div class="grid grid-cols-2 gap-2 text-xs font-mono border-b border-slate-800 pb-3">
-                        <div class="border-r border-slate-800 pr-2">
-                            <p class="text-slate-500 text-[10px] uppercase font-sans mb-1">Debe (Cargos)</p>
-                            <p class="text-accent font-bold">$${b.debe.toFixed(2)}</p>
-                        </div>
-                        <div class="pl-2">
-                            <p class="text-slate-500 text-[10px] uppercase font-sans mb-1">Haber (Abonos)</p>
-                            <p class="text-amber-400 font-bold">$${b.haber.toFixed(2)}</p>
-                        </div>
-                    </div>
-                    <div class="mt-3 flex justify-between items-center text-xs">
-                        <span class="text-slate-400">Saldo Neto:</span>
-                        <span class="font-mono font-bold text-white">$${Math.abs(net).toFixed(2)} (${net >= 0 ? 'Deudor' : 'Acreedor'})</span>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function renderBalance() {
-            const balances = getAccountBalances();
-            const activosDiv = document.getElementById('balance-activos');
-            const pasivosDiv = document.getElementById('balance-pasivos');
-            const capitalDiv = document.getElementById('balance-capital');
-
-            activosDiv.innerHTML = '';
-            pasivosDiv.innerHTML = '';
-            capitalDiv.innerHTML = '';
-
-            let totalActivos = 0;
-            let totalPasivos = 0;
-            let totalCapital = 0;
-
-            const assetAccounts = ['Caja / Bancos', 'Inventario', 'Cuentas por Cobrar', 'Equipos de Oficina'];
-            const liabilityAccounts = ['Cuentas por Pagar', 'Préstamos Bancarios'];
-            const capitalAccounts = ['Capital Social', 'Ingresos por Ventas'];
-
-            assetAccounts.forEach(acc => {
-                const b = balances[acc] ? (balances[acc].debe - balances[acc].haber) : 0;
-                if(b !== 0) {
-                    totalActivos += b;
-                    activosDiv.innerHTML += `<div class="flex justify-between"><span>${acc}:</span><span class="font-mono">$${b.toFixed(2)}</span></div>`;
-                }
-            });
-
-            liabilityAccounts.forEach(acc => {
-                const b = balances[acc] ? (balances[acc].haber - balances[acc].debe) : 0;
-                if(b !== 0) {
-                    totalPasivos += b;
-                    pasivosDiv.innerHTML += `<div class="flex justify-between"><span>${acc}:</span><span class="font-mono">$${b.toFixed(2)}</span></div>`;
-                }
-            });
-
-            capitalAccounts.forEach(acc => {
-                const b = balances[acc] ? (balances[acc].haber - balances[acc].debe) : 0;
-                if(b !== 0) {
-                    totalCapital += b;
-                    capitalDiv.innerHTML += `<div class="flex justify-between"><span>${acc}:</span><span class="font-mono">$${b.toFixed(2)}</span></div>`;
-                }
-            });
-
-            document.getElementById('total-activos').innerText = `$${totalActivos.toFixed(2)}`;
-            document.getElementById('total-pasivos').innerText = `$${totalPasivos.toFixed(2)}`;
-            document.getElementById('total-capital').innerText = `$${totalCapital.toFixed(2)}`;
-
-            const statusDiv = document.getElementById('balance-status');
-            const diff = totalActivos - (totalPasivos + totalCapital);
-            if(Math.abs(diff) < 0.01 && totalActivos > 0) {
-                statusDiv.className = "p-4 rounded-lg text-center text-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-                statusDiv.innerHTML = `<i class="fa-solid fa-check-circle mr-2"></i> Balance Cuadrado Correctamente (Activo = Pasivo + Capital)`;
-            } else if (totalActivos === 0) {
-                statusDiv.className = "p-4 rounded-lg text-center text-sm font-medium bg-slate-900 text-slate-400 border border-slate-800";
-                statusDiv.innerHTML = `Sin datos suficientes para calcular ecuación contable.`;
-            } else {
-                statusDiv.className = "p-4 rounded-lg text-center text-sm font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20";
-                statusDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-2"></i> Advertencia: Descuadré detectado (Diferencia: $${diff.toFixed(2)})`;
-            }
-        }
-
-        function updateDashboard() {
-            const balances = getAccountBalances();
-            let activos = 0, pasivos = 0, capital = 0;
-
-            ['Caja / Bancos', 'Inventario', 'Cuentas por Cobrar', 'Equipos de Oficina'].forEach(acc => {
-                if(balances[acc]) activos += (balances[acc].debe - balances[acc].haber);
-            });
-            ['Cuentas por Pagar', 'Préstamos Bancarios'].forEach(acc => {
-                if(balances[acc]) pasivos += (balances[acc].haber - balances[acc].debe);
-            });
-            ['Capital Social', 'Ingresos por Ventas'].forEach(acc => {
-                if(balances[acc]) capital += (balances[acc].haber - balances[acc].debe);
-            });
-
-            document.getElementById('dash-activos').innerText = `$${activos.toFixed(2)}`;
-            document.getElementById('dash-pasivos').innerText = `$${pasivos.toFixed(2)}`;
-            document.getElementById('dash-capital').innerText = `$${capital.toFixed(2)}`;
-            document.getElementById('dash-asientos').innerText = entries.length;
-        }
-
-        function resetData() {
-            if(confirm('¿Estás seguro de eliminar todos los registros contables?')) {
-                entries = [];
-                saveAndRefresh();
-                alert('Datos reiniciados con éxito.');
-            }
-        }
-
-        // Inicializar vistas
-        renderEntries();
-        updateDashboard();
-    </script>
+    renderQuestion();
+  </script>
 </body>
 </html>
